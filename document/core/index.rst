@@ -3,7 +3,7 @@ WebAssembly Specification
 
 .. only:: html
 
-   | Release |release| + dispatch tags (Draft, |today|)
+   | Release |release| + Call Tags (Draft, |today|)
 
    | Editor: Andreas Rossberg
 

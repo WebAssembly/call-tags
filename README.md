@@ -1,14 +1,14 @@
-[![Build Status](https://travis-ci.org/WebAssembly/dispatch-tags.svg?branch=master)](https://travis-ci.org/WebAssembly/spec)
+[![Build Status](https://travis-ci.org/WebAssembly/call-tags.svg?branch=master)](https://travis-ci.org/WebAssembly/spec)
 
-# Dispatch-tags Proposal for WebAssembly
+# Call Tags Proposal for WebAssembly
 
 This repository is a clone of [github.com/WebAssembly/spec/](https://github.com/WebAssembly/spec/).
 It is meant for discussion, prototype specification and implementation of a proposal to
-add support for dispatch tags to WebAssembly.
+add support for call tags to WebAssembly.
 
-* See the [overview](proposals/dispatch-tags/Overview.md) for a summary of the proposal.
+* See the [overview](proposals/call-tags/Overview.md) for a summary of the proposal.
 
-* See the [modified spec](https://webassembly.github.io/dispatch-tags/) for details.
+* See the [modified spec](https://webassembly.github.io/call-tags/) for details.
 
 Original `README` from upstream repository follows...
 

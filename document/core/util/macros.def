@@ -3,11 +3,11 @@
 .. External Standards
 .. ------------------
 
-.. |WasmDraft| replace:: http://webassembly.github.io/dispatch-tags/core/
-.. _WasmDraft: http://webassembly.github.io/dispatch-tags/core/
+.. |WasmDraft| replace:: http://webassembly.github.io/call-tags/core/
+.. _WasmDraft: http://webassembly.github.io/call-tags/core/
 
-.. |WasmIssues| replace:: http://github.com/webassembly/dispatch-tags/issues/
-.. _WasmIssues: http://github.com/webassembly/dispatch-tags/issues/
+.. |WasmIssues| replace:: http://github.com/webassembly/call-tags/issues/
+.. _WasmIssues: http://github.com/webassembly/call-tags/issues/
 
 .. |IEEE754| replace:: IEEE 754-2019
 .. _IEEE754: https://ieeexplore.ieee.org/document/8766229
