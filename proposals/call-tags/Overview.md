@@ -53,7 +53,7 @@ Of course, these associated call tags have to be compatible with the function's 
 
 ### Calling with call tags
 
-`call_indirect` would then have a variant, say `call_funcref $dt` that specifies what call tag `$ct` to use.
+`call_indirect` would then have a variant, say `call_funcref $ct` that specifies what call tag `$ct` to use.
 If the call tag `$ct` has associated signature type `[t1*] -> [t2*]`, then `call_funcref $ct` has type `[t1* funcref] -> [t2*]`.
 Thus the provided inputs and expected outputs are type-checked to match the signature associated with the call tag.
 The current `call_indirect` becomes just a shorthand for first getting the `funcref` from the appropriate table and then using `call_funcref` with the call tag resulting from `call_tag.canon` on the expected signature.
