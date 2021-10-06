@@ -176,6 +176,11 @@ This has four applications:
 3. For dynamically typed object-oriented languages, you can use this to implement support user-specified handling of missing methods. That is, objects would have built-in methods, and the "fall-back" function would kick in whenever the method was not built into the object at creation time, in which case it can look for the method in the "added later" dictionary, and if that fails it can call the object's "missing method" method.
 4. For functional languages, this makes it possible to support *unbounded* dynamic arity. In particular, when you create a closure for a value of type `a -> b -> c` (where each letter is a type variable), the `funcref` in your closure can handle the unary and binary call tags. But if `c` is abstracting a function type, your `funcref` might get called with call tags for higher arity. Without a fall-back, you have to cap the arity so that this `funcref` can `func_switch` on a finite number of cases. With a fall-back, you can make the fall-back handler for an n-ary call tag dynamically look up the arity the closure was compiled with (in this example, `2`), call it with just that many arguments, and then call the returned closure with the remaining arguments (in this example, using the `n-2`-arity call tag).
 
+### Variant
+
+Many call tags are specialized/optimized cases of more generic call tags.
+In these cases, it can be useful to pass the `funcref` that didn't recognize the call tag to the fall-back handler so that a specialized call tag can simply call the same `funcref` with the more generic call tag.
+
 ## Forwards-Compatibility
 
 Preliminary investigations suggest that call tags will be compatible with features like parameterized (i.e. generic) interfaces and polymorphic functions/methods as well as existential types to eliminate superfluous casts.
