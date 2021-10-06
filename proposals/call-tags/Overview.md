@@ -112,7 +112,7 @@ There is just one restriction that needs to be made: `call_tag.canon` must only 
 That is, it is the ability to generate canonical call tags from abstract types that violates abstraction.
 (This observation seems to extend more generally to processes that would generate canonical values from types where the values are equal only if the types are equal.)
 
-## Extension
+## Extension: Switching
 
 In addition to *direct* functions, we could let a module declare a number of *switch* (or indirect?) functions that look like the following:
 ```
@@ -134,9 +134,9 @@ That might seem odd because previously `ref.func` took a `func` identifier.
 The disconnect is because `func` is currently doing two things: defining a direct function *and* defining a `func_switch` that calls that function on each of the associated call tags.
 So every `func` identifier is also a `func_switch` identifier, making this change in perspective still backwards compatible.
 
-## Applications
+### Applications
 
-### Interfaces
+#### Interfaces
 
 At present, `call_indirect` is primarily used for untyped (from wasm's perspective) function calls.
 But we can take the concept of call tags further to support more language features.
@@ -154,7 +154,7 @@ See [Efficient implementation of Java interfaces: Invokeinterface considered har
 It would be very difficult to implement this pattern without direct support from WebAssembly because two interface methods assigned to the same slot can have completely different signatures, i.e. number and size of arguments.
 So call tags enables an important pattern used in practice to support a feature that is critical for many major languages (specifically Java, Kotlin, and Scala come to mind, though not C# due to its decision to support multiple-instantiation inheritance of generic interfaces).
 
-### Dynamic Arity
+#### Dynamic Arity
 
 In functional languages, a value of type `a -> b -> c` (where each letter is a type variable) is a closure of unknown arity.
 Due to currying, it could be a closure expecting an `a` that then will return a closure expecting a `b` that then will return a `c`.
@@ -163,6 +163,23 @@ Due to first-class functions, the `c` itself could represent a function type, so
 A functional language could implement closure application by having each closure specify its arity and by having each caller case on this arity.
 Or a functional language could use `func_switch` for a closure's `funcref` and have each caller use a call tag for the arity at hand which then the `func_switch` cases on to provide the appropriate functionality.
 The latter is moderately more efficient, but given the frequency of function applications in functional languages, that moderate improvement would likely be notable.
+
+## Extension: Fall-Back Handlers
+
+By default, if you call a `funcref` using a call tag that it does not recognize, the call traps.
+We could extend `call_tag.new` so that, when you create the call tag, you also specify a function that should be called whenever a `funcref` does not recognize the call tag, i.e. its "fall-back" handler.
+That function must have the same signature as the call tag so that it can be given the same arguments and be guaranteed to return values of the expected type.
+
+This has four applications:
+1. You can get more graceful behavior than a trap, e.g. throwing an exception.
+2. You can use this to support deferred loading, i.e. the "fall-back" function prompts the missing functionality to be loaded in.
+3. For dynamically typed object-oriented languages, you can use this to implement support user-specified handling of missing methods. That is, objects would have built-in methods, and the "fall-back" function would kick in whenever the method was not built into the object at creation time, in which case it can look for the method in the "added later" dictionary, and if that fails it can call the object's "missing method" method.
+4. For functional languages, this makes it possible to support *unbounded* dynamic arity. In particular, when you create a closure for a value of type `a -> b -> c` (where each letter is a type variable), the `funcref` in your closure can handle the unary and binary call tags. But if `c` is abstracting a function type, your `funcref` might get called with call tags for higher arity. Without a fall-back, you have to cap the arity so that this `funcref` can `func_switch` on a finite number of cases. With a fall-back, you can make the fall-back handler for an n-ary call tag dynamically look up the arity the closure was compiled with (in this example, `2`), call it with just that many arguments, and then call the returned closure with the remaining arguments (in this example, using the `n-2`-arity call tag).
+
+### Variant
+
+Many call tags are specialized/optimized cases of more generic call tags.
+In these cases, it can be useful to pass the `funcref` that didn't recognize the call tag to the fall-back handler so that a specialized call tag can simply call the same `funcref` with the more generic call tag.
 
 ## Forwards-Compatibility
 
