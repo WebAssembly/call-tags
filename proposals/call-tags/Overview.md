@@ -164,17 +164,17 @@ A functional language could implement closure application by having each closure
 Or a functional language could use `func_switch` for a closure's `funcref` and have each caller use a call tag for the arity at hand which then the `func_switch` cases on to provide the appropriate functionality.
 The latter is moderately more efficient, but given the frequency of function applications in functional languages, that moderate improvement would likely be notable.
 
-## Extension: Default Behavior
+## Extension: Fall-Back Handlers
 
 By default, if you call a `funcref` using a call tag that it does not recognize, the call traps.
-We could extend `call_tag.new` so that, when you create the call tag, you also specify a function that should be called whenever a `funcref` does not recognize the call tag.
+We could extend `call_tag.new` so that, when you create the call tag, you also specify a function that should be called whenever a `funcref` does not recognize the call tag, i.e. its "fall-back" handler.
 That function must have the same signature as the call tag so that it can be given the same arguments and be guaranteed to return values of the expected type.
 
 This has four applications:
 1. You can get more graceful behavior than a trap, e.g. throwing an exception.
-2. You can use this to support deferred loading, i.e. the "default" function prompts the missing functionality to be loaded in.
-3. For dynamically typed object-oriented languages, you can use this to implement support user-specified handling of missing methods. That is, objects would have built-in methods, and the "default" function would kick in whenever the method was not built into the object at creation time, in which case it can look for the method in the "added later" dictionary, and if that fails it can call the object's "missing method" method.
-4. For functional languages, this makes it possible to support *unbounded* dynamic arity. In particular, when you create a closure for a value of type `a -> b -> c` (where each letter is a type variable), the `funcref` in your closure can handle the unary and binary call tags. But if `c` is abstracting a function type, your `funcref` might get called with call tags for higher arity. Without default behavior, you have to cap the arity so that this `funcref` can `func_switch` on a finite number of cases. With default behavior, you can make the default behavior for an n-ary call tag to be to dynamically look up the arity the closure was compiled with (in this example, `2`), call it with just that many arguments, and then call the returned closure with the remaining arguments (in this example, using the `n-2`-arity call tag).
+2. You can use this to support deferred loading, i.e. the "fall-back" function prompts the missing functionality to be loaded in.
+3. For dynamically typed object-oriented languages, you can use this to implement support user-specified handling of missing methods. That is, objects would have built-in methods, and the "fall-back" function would kick in whenever the method was not built into the object at creation time, in which case it can look for the method in the "added later" dictionary, and if that fails it can call the object's "missing method" method.
+4. For functional languages, this makes it possible to support *unbounded* dynamic arity. In particular, when you create a closure for a value of type `a -> b -> c` (where each letter is a type variable), the `funcref` in your closure can handle the unary and binary call tags. But if `c` is abstracting a function type, your `funcref` might get called with call tags for higher arity. Without a fall-back, you have to cap the arity so that this `funcref` can `func_switch` on a finite number of cases. With a fall-back, you can make the fall-back handler for an n-ary call tag dynamically look up the arity the closure was compiled with (in this example, `2`), call it with just that many arguments, and then call the returned closure with the remaining arguments (in this example, using the `n-2`-arity call tag).
 
 ## Forwards-Compatibility
 
